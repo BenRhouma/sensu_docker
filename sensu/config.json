@@ -1,0 +1,34 @@
+{
+  "rabbitmq": {
+    "ssl": {
+      "private_key_file": "/etc/sensu/ssl/key.pem",
+      "cert_chain_file": "/etc/sensu/ssl/cert.pem"
+    },
+    "port": 5671,
+    "host": "127.0.0.1",
+    "user": "sensu",
+    "password": "Vistaprint001",
+    "vhost": "/sensu"
+   },
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 6379
+  },
+  "api": {
+    "host": "127.0.0.1",
+    "port": 4567
+  },
+  "handlers": {
+    "default": {
+      "type": "set",
+      "handlers": [
+        "stdout"
+      ]
+    },
+    "stdout": {
+      "type": "pipe",
+      "command": "cat"
+    }
+  }
+}
+
