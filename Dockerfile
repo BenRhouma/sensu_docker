@@ -8,9 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
 
 
-#RUN echo "LOG_LEVEL=debug" >> /etc/default/sensu
-
-RUN apt-get upgrade -y && apt-get update && apt-get install -y redis-server vim rabbitmq-server supervisor wget
+RUN apt-get upgrade -y && apt-get update && apt-get install -y redis-server vim rabbitmq-server  wget
 RUN wget -q http://repositories.sensuapp.org/apt/pubkey.gpg -O- | apt-key add -  && echo "deb     http://repositories.sensuapp.org/apt sensu main" | tee /etc/apt/sources.list.d/sensu.list
 
 # install sensu
@@ -26,8 +24,6 @@ RUN chown sensu:sensu /etc/sensu -R
 # configure redis 
 RUN sed -i '/bind 127.0.0.1/c\bind 0.0.0.0' /etc/redis/redis.conf
 
-# add supervisord to run automatically services at container's bootstrap
-add     supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # RabbitMQ configurtion
 RUN rabbitmq-plugins enable rabbitmq_management
@@ -52,8 +48,14 @@ ADD sensu/uchiwa.json /etc/sensu/uchiwa.json
 
 RUN echo "LOG_LEVEL=debug" >> /etc/default/sensu
 
-add     supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 6379 15672 5671 4567 3000
 
-cmd     ["/usr/bin/supervisord", "-n"]
+RUN echo "" > /var/log/cluster-errors.log
+CMD service rabbitmq-server start  && service redis-server start  && service sensu-server start && service sensu-api start && service uchiwa start  &&  service sensu-client start && tail -F /var/log/cluster-errors.log
+
+
+
+
+
+

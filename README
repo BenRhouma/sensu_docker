@@ -2,7 +2,8 @@
 docker build sensu:lastest .
 
 # run container in the background
-docker run -d -p 6379:6379 -p 15672:15672 -p 5672:5672 -p 4567:4567 -p 3000:3000 sensu:lastest
+docker run -d --name sensu -h sensu -p 6379:6379 -p 15672:15672 -p 5672:5672 -p 4567:4567 -p 3000:3000 sensu:lastest
+
 
 
 # open uchiwa 
@@ -19,9 +20,16 @@ docker run -it -p 6379:6379 -p 15672:15672 -p 5672:5672 -p 4567:4567 -p 3000:300
 # to start services manually in the container
 #service rabbitmq-server start && service redis-server start && service sensu-server start && service sensu-api start && service uchiwa start
 
+
+#docker run -it  -p 6379:6379 -p 15672:15672 -p 5672:5672 -p 4567:4567 -p 3000:3000 -v $HOME/cond.d:/etc/sensu/conf.d sensu:lastest
 # build docker image
 docker build theia:v0.22 .
 
 
 # tail log file in the last docker image
 docker exec -ti `docker ps | cut -d' ' -f1 | head -n 2 |tail -1` /bin/bash -c "tail -f /var/log/sensu/sensu-api.log"
+
+
+
+/usr/sbin/rabbitmq-server & && /usr/bin/redis-server & && /opt/sensu/bin/sensu-server & && /opt/sensu/bin/sensu-api & && /opt/uchiwa/bin/uchiwa -c /etc/sensu/uchiwa.json -d /etc/sensu/dashboard.d -p /opt/uchiwa/src/public &
+
